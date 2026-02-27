@@ -1,0 +1,21 @@
+This is a personal chip-8 resource that i made(gathred on internet) while makeing this emulator
+
+
+                                                            Chip-8
+                                                            ======
+
+The chip-8 was never a real machine at all but insted a vertual machine. People would write program for this virtual machine, and then the interpreter would decode the instructions. Because it was virtual, the same program could run on different machines as long as they had an interpreter.
+
+
+
+
+
+
+
+
+
+
+
+Resource: A Blog on chip-8 by AustinMorlan.
+https://austinmorlan.com/posts/chip8_emulator/
+
