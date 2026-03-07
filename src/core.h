@@ -7,21 +7,27 @@
 extern "C"
 {
 #endif
-
+#include <stdio.h>
 #include <stdint.h>
+#include "raylib.h"
+#include <string.h>
 // Basic Type Defined
 
 typedef uint16_t uint16;
-typedef uint8_t uint8;
-
-typedef int16_t int16;
-typedef int8_t  int8;
+typedef uint8_t  uint8;
+typedef uint32_t uint32;
+typedef int16_t  int16;
+typedef int8_t   int8;
 
 typedef float    real32;
 typedef double   real64;
 
-#define WIDTH  64
-#define HEIGHT 32
+#define SCREEN_WIDTH  1280
+#define SCREEN_HEIGHT 640
+
+#define WIDTH  64 // 20
+#define HEIGHT 32 //20
+
 // Originally reserved for chip8 interpreter.
 #define MemoryStartChip8 0x000
 #define MemoryEndChip8   0x1FF 
@@ -32,7 +38,7 @@ typedef double   real64;
 
 // Rom will be stored starting from  address 0x200, anything are the
 // Rom, is free to use 
-#define MemoryForROMStart 0x200
+#define ROMSTART_ADDRESS 0x200
 
 typedef struct {
     uint8 Register[16]; // Registers
@@ -44,11 +50,16 @@ typedef struct {
     uint8 DelayTimer; 
     uint8 SoundTimer; 
     uint8 inputKeys[16]; // Input Keys.
-    uint8 DisplayMemrory[WIDTH * HEIGHT]; // Video Memory.
+    uint8 VideoMemory[WIDTH * HEIGHT]; // Video Memory.
     uint16 Opcode; // Opcode
-}Chip8;
+    uint16 RomSize;
+}chip8;
 
-void LoadRom(const char* FilePath);
+void PrintRom(uint8* Memory, uint16 RomSize);
+void DrawPixelData(uint8* VideoMemory);
+long GetFileSize(const char *FileName);
+void LoadRom(const char* FilePath, chip8* Ch8);
+
 #ifdef __cplusplus    
 }
 #endif
