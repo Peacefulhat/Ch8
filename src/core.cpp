@@ -1,32 +1,33 @@
 #include "core.h"
-#define SCALE 20
+#define SCALE 2
+#define FONTCANVASWIDTH 10
 void DrawFont(uint16 PosX, uint16 PosY, uint8* FontSet, uint16 FontOffSet)
 {
-    int Pitch = 0;
+    uint16 Pitch = 0;
     uint16 TempX = PosX;
-    for(uint16 FontIndex = 0; FontIndex < 5; ++FontIndex)
-    {
-        //1111 0000  
-        //1001 0000
-        //1001 0000
-        //1001 0000
-        //1111 0000
-        uint8 Font = FontSet[FontIndex + FontOffSet] >> 4;
-        uint16 Mask = 0x8; 
-        while(Mask)
+      for(uint16 Offset = 0; Offset < 16; Offset++){
+
+        for(uint16 FontIndex = 0; FontIndex < 5; ++FontIndex)
         {
-            if(Font & Mask)
+            uint8 Font = FontSet[FontIndex + FontOffSet * Offset] >> 4;
+            uint16 Mask = 0x8; 
+            while(Mask)
             {
-                DrawRectangle((PosX)*SCALE , (PosY + Pitch)*SCALE, 2*SCALE, 2*SCALE, RAYWHITE);
-            }else
-            {
-                DrawRectangle((PosX)*SCALE , (PosY + Pitch)*SCALE, 2*SCALE, 2*SCALE, BLACK);
+                if(Font & Mask)
+                {
+                    DrawRectangle((PosX)*SCALE , (PosY + Pitch)*SCALE, 2*SCALE, 2*SCALE, RAYWHITE);
+                }else
+                {
+                    DrawRectangle((PosX)*SCALE , (PosY + Pitch)*SCALE, 2*SCALE, 2*SCALE, BLACK);
+                }
+                PosX += 2;
+                Mask >>= 1;
+                
             }
-            PosX += 2;
-            Mask >>= 1;
+            PosX = TempX;
+            Pitch +=2;
         }
-        PosX = TempX;
-        Pitch +=2;
+        Pitch +=5;
     }
 }
 
@@ -57,13 +58,29 @@ void DrawPixelData(uint8* VideoMemory)
         for(int Cols = 0; Cols < WIDTH; ++Cols)
         {
             Color PixelColor = {VideoMemory[Row * WIDTH + Cols], VideoMemory[Row * WIDTH + Cols], VideoMemory[Row * WIDTH + Cols], 255};
-                DrawRectangle(Cols * PIXELSCALE, Row * PIXELSCALE, 20, 20, PixelColor);
+            DrawRectangle(Cols * PIXELSCALE, Row * PIXELSCALE, 20, 20, PixelColor);
         }
     }
 }
 
+void PrintFonts(uint8* Memory, uint8 FontSetSize)
+{
+    printf("\nFont::\n");
+    for(int FontIndex = 0; FontIndex < FontSetSize; FontIndex++)
+    {
+        if((FontIndex + 1) % 5 == 0)
+        {
+           printf("%02X\n", Memory[FONTSET_START + FontIndex]);
+            continue;
+        }
+        printf("%02X ", Memory[FONTSET_START + FontIndex]);
+
+    }   
+}
+
 void PrintRom(uint8* Memory, uint16 RomSize)
 {
+    printf("Rom::\n");
     for(uint32 i = 0; i < RomSize; ++i)
     {
         printf("%02X ", Memory[ROMSTART_ADDRESS + i]);

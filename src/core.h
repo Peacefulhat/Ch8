@@ -36,7 +36,7 @@ typedef double   real64;
 #define MemoryEndChip8   0x1FF 
 
 // Storage Space for 16 built-in characters.
-#define MemoryForCharsStart 0x050
+#define FONTSET_START 0x050
 #define MemoryForCharsEnd   0x0A0
 
 // Rom will be stored starting from  address 0x200, anything are the
@@ -47,7 +47,7 @@ typedef struct {
     uint8 Register[16]; // Registers
     uint8 Memory[4096]; // (RAM)
     uint16 IndexRegister; 
-    uint16 ProgramCouner; 
+    uint16 ProgramCounter; 
     uint16 Stack[16]; 
     uint8 StackPointer; 
     uint8 DelayTimer; 
@@ -64,6 +64,7 @@ typedef struct {
 // Sprite Pixel Off XOR Display Pixel On = Display Pixel On
 // Sprite Pixel On XOR Display Pixel Off = Display Pixel On
 // Sprite Pixel On XOR Display Pixel On = Display Pixel Off
+void PrintFonts(uint8* Memory, uint8 FontSetSize);
 void PrintRom(uint8* Memory, uint16 RomSize);
 void DrawPixelData(uint8* VideoMemory);
 long GetFileSize(const char *FileName);

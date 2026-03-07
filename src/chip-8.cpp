@@ -1,6 +1,7 @@
 #include "core.h"
+#define FONTSET_SIZE 80
 
-uint8 Chip8FontSet[80] =
+uint8 Chip8FontSet[FONTSET_SIZE] =
 { 
   0xF0, 0x90, 0x90, 0x90, 0xF0, // 0
   0x20, 0x60, 0x20, 0x20, 0x70, // 1
@@ -20,29 +21,39 @@ uint8 Chip8FontSet[80] =
   0xF0, 0x80, 0xF0, 0x80, 0x80  // F
 };
 
+
+
 int main(int argc, char** argv)
 {
 
     chip8 Ch8 = {};
-    for (int i = 0; i < 2048; i++)
+    Ch8.ProgramCounter = ROMSTART_ADDRESS;
+    for(int FontIndex = 0; FontIndex < FONTSET_SIZE; FontIndex++)
     {
-        Ch8.VideoMemory[i] = 1;
-    }
-
+       Ch8.Memory[FONTSET_START + FontIndex] = Chip8FontSet[FontIndex];
+   }
+   
+   
     
-    InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Chip8");
+   /* InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Chip8");
 
     while (!WindowShouldClose())
     {
         BeginDrawing();
         ClearBackground(BLACK);
         //        DrawPixelData(Ch8.VideoMemory);
-        DrawFont(20, 20, Chip8FontSet, 5*15);
+        for(uint16 i = 0; i < 50*6; i+=10)
+        {
+            DrawFont(20+i, 20, Chip8FontSet, 5);
+        }
         EndDrawing();
     }
     
     CloseWindow();
+    */
+    
     LoadRom("D:/ch8/src/roms/AstroDodge.ch8", &Ch8);
     PrintRom(Ch8.Memory, Ch8.RomSize);
+    PrintFonts(Ch8.Memory, FONTSET_SIZE);
     return 0;
 }
