@@ -1,4 +1,3 @@
-
 #ifndef CORE_H
 #define CORE_H
 
@@ -25,8 +24,12 @@ typedef double   real64;
 #define SCREEN_WIDTH  1280
 #define SCREEN_HEIGHT 640
 
-#define WIDTH  64 // 20
-#define HEIGHT 32 //20
+// scale factor for video memory layout to map to window width and height.
+#define PIXELSCALE 20
+
+// vidoe memory pixel layout
+#define WIDTH  64 
+#define HEIGHT 32 
 
 // Originally reserved for chip8 interpreter.
 #define MemoryStartChip8 0x000
@@ -52,13 +55,20 @@ typedef struct {
     uint8 inputKeys[16]; // Input Keys.
     uint8 VideoMemory[WIDTH * HEIGHT]; // Video Memory.
     uint16 Opcode; // Opcode
-    uint16 RomSize;
+    uint16 RomSize; // RomSize(In Bytes)
 }chip8;
 
+
+// This is used for drawing.
+// Sprite Pixel Off XOR Display Pixel Off = Display Pixel Off
+// Sprite Pixel Off XOR Display Pixel On = Display Pixel On
+// Sprite Pixel On XOR Display Pixel Off = Display Pixel On
+// Sprite Pixel On XOR Display Pixel On = Display Pixel Off
 void PrintRom(uint8* Memory, uint16 RomSize);
 void DrawPixelData(uint8* VideoMemory);
 long GetFileSize(const char *FileName);
 void LoadRom(const char* FilePath, chip8* Ch8);
+void DrawFont(uint16 PosX, uint16 PosY, uint8* FontSet, uint16 FontOffSet);
 
 #ifdef __cplusplus    
 }

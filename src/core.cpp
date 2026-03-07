@@ -1,4 +1,34 @@
 #include "core.h"
+#define SCALE 20
+void DrawFont(uint16 PosX, uint16 PosY, uint8* FontSet, uint16 FontOffSet)
+{
+    int Pitch = 0;
+    uint16 TempX = PosX;
+    for(uint16 FontIndex = 0; FontIndex < 5; ++FontIndex)
+    {
+        //1111 0000  
+        //1001 0000
+        //1001 0000
+        //1001 0000
+        //1111 0000
+        uint8 Font = FontSet[FontIndex + FontOffSet] >> 4;
+        uint16 Mask = 0x8; 
+        while(Mask)
+        {
+            if(Font & Mask)
+            {
+                DrawRectangle((PosX)*SCALE , (PosY + Pitch)*SCALE, 2*SCALE, 2*SCALE, RAYWHITE);
+            }else
+            {
+                DrawRectangle((PosX)*SCALE , (PosY + Pitch)*SCALE, 2*SCALE, 2*SCALE, BLACK);
+            }
+            PosX += 2;
+            Mask >>= 1;
+        }
+        PosX = TempX;
+        Pitch +=2;
+    }
+}
 
 long GetFileSize(const char *FileName)
 {
@@ -18,6 +48,8 @@ long GetFileSize(const char *FileName)
     return FileSize;
 }
 
+
+
 void DrawPixelData(uint8* VideoMemory)
 {
     for(int Row = 0; Row < HEIGHT; ++Row)
@@ -25,7 +57,7 @@ void DrawPixelData(uint8* VideoMemory)
         for(int Cols = 0; Cols < WIDTH; ++Cols)
         {
             Color PixelColor = {VideoMemory[Row * WIDTH + Cols], VideoMemory[Row * WIDTH + Cols], VideoMemory[Row * WIDTH + Cols], 255};
-            DrawRectangle(Cols * 20, Row * 20 , 20, 20, PixelColor);
+                DrawRectangle(Cols * PIXELSCALE, Row * PIXELSCALE, 20, 20, PixelColor);
         }
     }
 }
