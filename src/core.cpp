@@ -34,7 +34,7 @@ void DrawFont(uint16 PosX, uint16 PosY, uint8* FontSet, uint16 FontOffSet)
 long GetFileSize(const char *FileName)
 {
     FILE *Fp = {};
-    fopen_s(&Fp, FileName, "rb");
+    Fp = fopen(FileName, "rb");
 
     if (Fp == NULL) return -1;
 
@@ -94,7 +94,7 @@ void PrintRom(uint8* Memory, uint16 RomSize)
 void LoadRom(const char* FileName, chip8* Ch8)
 {
     FILE* File = {};
-    fopen_s(&File, FileName, "rb");
+    File = fopen(FileName, "rb");
     if (!File)
     {
         printf("Failed to open ROM\n");
