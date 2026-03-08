@@ -1,11 +1,12 @@
 #include "core.h"
+
 #define SCALE 2
 #define FONTCANVASWIDTH 10
 void DrawFont(uint16 PosX, uint16 PosY, uint8* FontSet, uint16 FontOffSet)
 {
     uint16 Pitch = 0;
     uint16 TempX = PosX;
-      for(uint16 Offset = 0; Offset < 16; Offset++){
+    for(uint16 Offset = 0; Offset < 16; Offset++){
 
         for(uint16 FontIndex = 0; FontIndex < 5; ++FontIndex)
         {
@@ -53,13 +54,19 @@ long GetFileSize(const char *FileName)
 
 void DrawPixelData(uint8* VideoMemory)
 {
-    for(int Row = 0; Row < HEIGHT; ++Row)
+    for(int Row = 0; Row < VHEIGHT; ++Row)
     {
-        for(int Cols = 0; Cols < WIDTH; ++Cols)
+        for(int Cols = 0; Cols < VWIDTH; ++Cols)
         {
-            Color PixelColor = {VideoMemory[Row * WIDTH + Cols], VideoMemory[Row * WIDTH + Cols], VideoMemory[Row * WIDTH + Cols], 255};
-            DrawRectangle(Cols * PIXELSCALE, Row * PIXELSCALE, 20, 20, PixelColor);
+            if(VideoMemory[Row * VWIDTH + Cols] == 0){
+                DrawRectangle(Cols * PIXELSCALE, Row * PIXELSCALE, 20, 20, BLACK);
+            }
+            else
+            {
+                DrawRectangle(Cols * PIXELSCALE, Row * PIXELSCALE, 20, 20, RAYWHITE);
+            }
         }
+        
     }
 }
 
@@ -70,7 +77,7 @@ void PrintFonts(uint8* Memory, uint8 FontSetSize)
     {
         if((FontIndex + 1) % 5 == 0)
         {
-           printf("%02X\n", Memory[FONTSET_START + FontIndex]);
+            printf("%02X\n", Memory[FONTSET_START + FontIndex]);
             continue;
         }
         printf("%02X ", Memory[FONTSET_START + FontIndex]);
@@ -105,4 +112,54 @@ void LoadRom(const char* FileName, chip8* Ch8)
     fread(Ch8->Memory + ROMSTART_ADDRESS, 1, FileSize, File);
     Ch8->RomSize = (uint16)(FileSize);
     fclose(File);
+}
+
+void RNG(chip8* Ch8, uint8 RegisterIndex)
+{
+    Ch8->Registers[RegisterIndex] = rand() % 255;
+}
+
+void OP_00E0(chip8* Ch8)
+{
+	memset(Ch8->VideoMemory, 0, sizeof(Ch8->VideoMemory));
+}
+
+void OP_00EE(chip8* Ch8)
+{
+    --Ch8->StackPointer;
+    Ch8->ProgramCounter = Ch8->Stack[Ch8->StackPointer];
+}
+
+void OP_1nnn(chip8* Ch8)
+{
+    Ch8->ProgramCounter = Ch8->Opcode & 0x0FFF;
+}
+
+void OP_2nnn(chip8* Ch8)
+{
+    Ch8->Stack[Ch8->StackPointer] = Ch8->ProgramCounter;
+    ++Ch8->StackPointer;
+    Ch8->ProgramCounter = Ch8->Opcode & 0x0FFF;
+}
+
+void OP_3xkk(chip8* Ch8)
+{
+    uint8 RegisterIndex = (Ch8->Opcode & 0xF00) >> 8;
+    uint8 KK = (Ch8->Opcode & 0x00FF);
+    if(Ch8->Registers[RegisterIndex] == KK)
+    {
+        Ch8->ProgramCounter += 2;
+    }
+    
+}
+
+void OP_4xkk(chip8* Ch8)
+{
+    uint8 RegisterIndex = (Ch8->Opcode & 0xF00) >> 8;
+    uint8 KK = (Ch8->Opcode & 0x00FF);
+    if(Ch8->Registers[RegisterIndex] != KK)
+    {
+        Ch8->ProgramCounter += 2;
+    }
+    
 }
