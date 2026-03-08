@@ -170,12 +170,12 @@ void OP_4xkk(chip8* Ch8)
 
 void OP_5xy0(chip8* Ch8)
 {   // 0005 xxxx yyyy 0000
-    uint8 Vx = (Ch8->Opcode & 0x0F00) >> 8;
-    uint8 Vy = (Ch8->Opcode & 0x00F0) >> 4;
-    if(Ch8->Registers[Vx] == Ch8->Registers[Vy])
-    {
-        Ch8->ProgramCounter += 2;
-    }
+uint8 Vx = (Ch8->Opcode & 0x0F00) >> 8;
+uint8 Vy = (Ch8->Opcode & 0x00F0) >> 4;
+if(Ch8->Registers[Vx] == Ch8->Registers[Vy])
+{
+    Ch8->ProgramCounter += 2;
+}
 }
 
 void OP_6xkk(chip8* Ch8)
@@ -200,5 +200,67 @@ void OP_8xy0(chip8* Ch8)
     uint8 Vx = (Ch8->Opcode & 0x0F00) >> 8;
     uint8 Vy = (Ch8->Opcode & 0x00F0) >> 4;
     Ch8->Registers[Vx] = Ch8->Registers[Vy];
+}
+
+void OP_8xy1(chip8* Ch8)
+{
+    // 0008 xxxx yyyy 1111
+    uint8 Vx = (Ch8->Opcode & 0x0F00) >> 8;
+    uint8 Vy = (Ch8->Opcode & 0x00F0) >> 4;
+    Ch8->Registers[Vx] |= Ch8->Registers[Vy];
+}
+
+void OP_8xy2(chip8* Ch8)
+{
+    // 0008 xxxx yyyy 2222
+    uint8 Vx = (Ch8->Opcode & 0x0F00) >> 8;
+    uint8 Vy = (Ch8->Opcode & 0x00F0) >> 4;
+    Ch8->Registers[Vx] &= Ch8->Registers[Vy];
+}
+
+void OP_8xy3(chip8* Ch8)
+{
+    // 0008 xxxx yyyy 2222
+    uint8 Vx = (Ch8->Opcode & 0x0F00) >> 8;
+    uint8 Vy = (Ch8->Opcode & 0x00F0) >> 4;
+    Ch8->Registers[Vx] ^= Ch8->Registers[Vy];
+}
+
+void OP_8xy4(chip8* Ch8)
+{
+	uint8_t Vx = (Ch8->Opcode & 0x0F00) >> 8;
+	uint8_t Vy = (Ch8->Opcode & 0x00F0) >> 4;
+
+	uint16 Sum = Ch8->Registers[Vx] + Ch8->Registers[Vy];
+    //The values of Vxvoid OP_8xy4(chip8* Ch8); and Vy are added together. If the result is greater than 8 bits (i.e., > 255,) VF is set to 1, otherwise 0. Only the lowest 8 bits of the result are kept, and stored in Vx.
+	if (Sum > 255)
+	{
+		Ch8->Registers[0xF] = 1;
+	}
+	else
+	{
+		Ch8->Registers[0xF] = 0;
+	}
+
+	Ch8->Registers[Vx] = Sum & 0xFF;
+}
+
+void OP_8xy5(chip8* Ch8)
+{
+    //If Vx > Vy, then VF is set to 1, otherwise 0. Then Vy is subtracted from Vx, and the results stored in Vx.
+    uint8_t Vx = (Ch8->Opcode & 0x0F00) >> 8;
+	uint8_t Vy = (Ch8->Opcode & 0x00F0) >> 4;
+
+	if (Ch8->Registers[Vx] > Ch8->Registers[Vy])
+	{
+		Ch8->Registers[0xF] = 1;
+	}
+	else
+	{
+		Ch8->Registers[0xF] = 0;
+	}
+
+	Ch8->Registers[Vx] -= Ch8->Registers[Vy];
+}
 }
 

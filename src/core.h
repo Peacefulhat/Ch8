@@ -83,7 +83,12 @@ extern "C"
     void OP_6xkk(chip8* Ch8);// LD Vx, byte   Set Vx = kk.
     void OP_7xkk(chip8* Ch8);// ADD Vx, byte  Set Vx = Vx + kk.
     void OP_8xy0(chip8* Ch8);// LD Vx, Vy     Set Vx = Vy.
-    
+    void OP_8xy1(chip8* Ch8);// OR Vx, Vy     Set Vx = Vx OR Vy.
+    void OP_8xy2(chip8* Ch8);// AND Vx, Vy    Set Vx = Vx AND Vy.
+    void OP_8xy3(chip8* Ch8);// XOR Vx, Vy    Set Vx = Vx XOR Vy.
+    void OP_8xy4(chip8* Ch8);// ADD Vx, Vy    Set Vx = Vx + Vy, set VF = carry.
+    void OP_8xy5(chip8* Ch8);// SUB Vx, Vy    Set Vx = Vx - Vy, set VF = NOT borrow.
+
     #ifdef __cplusplus    
 }
 #endif
