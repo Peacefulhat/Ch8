@@ -32,7 +32,7 @@ extern "C"
     // scale factor for video memory layout to map to window width and height.
     #define PIXELSCALE 20
 
-    // vidoe memory pixel layout
+    // vidoe memory pixel layout.
     #define VWIDTH  64 
     #define VHEIGHT 32 
 
@@ -45,7 +45,7 @@ extern "C"
     #define FONTSET_END   0x0A0
 
     // Rom will be stored starting from  address 0x200, anything are the
-    // Rom, is free to use 
+    // Rom, is free to use. 
     #define ROMSTART_ADDRESS 0x200
 
     typedef struct {
@@ -57,8 +57,8 @@ extern "C"
         uint8 StackPointer; 
         uint8 DelayTimer; 
         uint8 SoundTimer; 
-        uint8 inputKeys[16]; // Input Keys.
-        uint8 VideoMemory[VWIDTH * VHEIGHT]; // Video Memory.
+        uint8 inputKeys[16]; // Input Keys
+        uint8 VideoMemory[VWIDTH * VHEIGHT]; // Video Memory
         uint16 Opcode; // Opcode
         uint16 RomSize; // RomSize(In Bytes)
     }chip8;
@@ -71,14 +71,19 @@ extern "C"
     void DrawFont(uint16 PosX, uint16 PosY, uint8* FontSet, uint16 FontOffSet);
     void RNG(chip8* Ch8, uint8 RegisterIndex); // Random number generator, to set register with some random value.
     
-    //Instructions
-    void OP_00E0(chip8* Ch8);// clear screen
-    void OP_00EE(chip8* Ch8);// RET , return top of the stack and assign it to Program Counter. Returns from subroutine.
-    void OP_1nnn(chip8* Ch8);// Jump to nnn location. A jump doesn’t remember its origin, so no stack interaction required.
-    void OP_2nnn(chip8* Ch8);// CALL, Call subroutine at nnn location.
-    void OP_3xkk(chip8* Ch8);// Skip next instruction if Vx = kk. So Vx just means “the register indexed by x in the array V[16]”
-    void OP_3xkk(chip8* Ch8);// Skip next instruction if Vx != kk.
-    void OP_5xy0(chip8* Ch8);// Skip next instruction if Vx = Vy.
+    //Instructions             Assembly       Description
+    
+    void OP_00E0(chip8* Ch8);// CLS           clear screen.
+    void OP_00EE(chip8* Ch8);// RET           return top of the stack and assign it to Program Counter. Returns from subroutine.
+    void OP_1nnn(chip8* Ch8);// JP addr,      Jump to nnn location. A jump doesn’t remember its origin, so no stack interaction required.
+    void OP_2nnn(chip8* Ch8);// CALL addr,    Call subroutine at nnn location.
+    void OP_3xkk(chip8* Ch8);// SE Vx, byte   Skip next instruction if Vx = kk. Vx just means the register indexed by x in the array V[16].
+    void OP_3xkk(chip8* Ch8);// SNE Vx, byte  Skip next instruction if Vx != kk.
+    void OP_5xy0(chip8* Ch8);// SE Vx, Vy     Skip next instruction if Vx = Vy.
+    void OP_6xkk(chip8* Ch8);// LD Vx, byte   Set Vx = kk.
+    void OP_7xkk(chip8* Ch8);// ADD Vx, byte  Set Vx = Vx + kk.
+    void OP_8xy0(chip8* Ch8);// LD Vx, Vy     Set Vx = Vy.
+    
     #ifdef __cplusplus    
 }
 #endif

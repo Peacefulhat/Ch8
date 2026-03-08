@@ -132,11 +132,13 @@ void OP_00EE(chip8* Ch8)
 
 void OP_1nnn(chip8* Ch8)
 {
+    // 0001 nnnn nnnn nnnn
     Ch8->ProgramCounter = Ch8->Opcode & 0x0FFF;
 }
 
 void OP_2nnn(chip8* Ch8)
 {
+    // 0002 nnnn nnnn nnnn
     Ch8->Stack[Ch8->StackPointer] = Ch8->ProgramCounter;
     ++Ch8->StackPointer;
     Ch8->ProgramCounter = Ch8->Opcode & 0x0FFF;
@@ -144,6 +146,7 @@ void OP_2nnn(chip8* Ch8)
 
 void OP_3xkk(chip8* Ch8)
 {
+    // 0003 xxxx kkkk kkkk
     uint8 RegisterIndex = (Ch8->Opcode & 0xF00) >> 8;
     uint8 KK = (Ch8->Opcode & 0x00FF);
     if(Ch8->Registers[RegisterIndex] == KK)
@@ -155,6 +158,7 @@ void OP_3xkk(chip8* Ch8)
 
 void OP_4xkk(chip8* Ch8)
 {
+    // 0004 xxxx kkkk kkkk
     uint8 RegisterIndex = (Ch8->Opcode & 0xF00) >> 8;
     uint8 KK = (Ch8->Opcode & 0x00FF);
     if(Ch8->Registers[RegisterIndex] != KK)
@@ -163,3 +167,38 @@ void OP_4xkk(chip8* Ch8)
     }
     
 }
+
+void OP_5xy0(chip8* Ch8)
+{   // 0005 xxxx yyyy 0000
+    uint8 Vx = (Ch8->Opcode & 0x0F00) >> 8;
+    uint8 Vy = (Ch8->Opcode & 0x00F0) >> 4;
+    if(Ch8->Registers[Vx] == Ch8->Registers[Vy])
+    {
+        Ch8->ProgramCounter += 2;
+    }
+}
+
+void OP_6xkk(chip8* Ch8)
+{
+    // 0006 xxxx kkkk kkkk
+    uint8 Byte = Ch8->Opcode & 0x00FF;
+    uint8 RegisterIndex = (Ch8->Opcode & 0x0F00) >> 8;
+    Ch8->Registers[RegisterIndex] = Byte;
+}
+
+void OP_7xkk(chip8* Ch8)
+{
+    // 0007 xxxx kkkk kkkk
+    uint8 Vx = (Ch8->Opcode & 0x0F00) >> 8;
+    uint8 Byte = Ch8->Opcode & 0x00FF;
+    Ch8->Registers[Vx] += Byte;
+}
+
+void OP_8xy0(chip8* Ch8)
+{
+    // 0008 xxxx yyyy 0000
+    uint8 Vx = (Ch8->Opcode & 0x0F00) >> 8;
+    uint8 Vy = (Ch8->Opcode & 0x00F0) >> 4;
+    Ch8->Registers[Vx] = Ch8->Registers[Vy];
+}
+
