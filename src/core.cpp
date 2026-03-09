@@ -85,12 +85,12 @@ void PrintFonts(uint8* Memory, uint8 FontSetSize)
     }   
 }
 
-void PrintRom(uint8* Memory, uint16 RomSize)
+void PrintRom(chip8* Ch8)
 {
     printf("Rom::\n");
-    for(uint32 i = 0; i < RomSize; ++i)
+    for(uint32 i = 0; i < Ch8->RomSize; ++i)
     {
-        printf("%02X ", Memory[ROMSTART_ADDRESS + i]);
+        printf("%02X ", Ch8->Memory[ROMSTART_ADDRESS + i]);
 
         if((i + 1)  % 16  == 0)
         printf("\n");
@@ -119,6 +119,9 @@ void RNG(chip8* Ch8, uint8 RegisterIndex)
     Ch8->Registers[RegisterIndex] = rand() % 255;
 }
 
+static uint8 RNG2(){
+    return rand() % 255;
+}
 void OP_00E0(chip8* Ch8)
 {
 	memset(Ch8->VideoMemory, 0, sizeof(Ch8->VideoMemory));
@@ -262,5 +265,211 @@ void OP_8xy5(chip8* Ch8)
 
 	Ch8->Registers[Vx] -= Ch8->Registers[Vy];
 }
+
+void OP_8xy6(chip8* Ch8)
+{
+    uint8 Vx = (Ch8->Opcode & 0x0F00) >> 8;
+    Ch8->Registers[0xF] = (Ch8->Registers[Vx] & 0x1);
+    Ch8->Registers[Vx] >>= 1;
 }
 
+void OP_8xy7(chip8* Ch8)
+{
+    uint8 Vx = (Ch8->Opcode & 0x0F00) >> 8;
+    uint8 Vy = (Ch8->Opcode & 0x00F0) >> 4;
+    Ch8->Registers[0xF] = (Ch8->Registers[Vy] > Ch8->Registers[Vx]);
+    Ch8->Registers[Vx] = Ch8->Registers[Vy] - Ch8->Registers[Vx];
+}
+
+void OP_8xyE(chip8* Ch8)
+{
+    uint8 Vx = (Ch8->Opcode & 0x0F00) >> 8;
+    Ch8->Registers[0xF] = (Ch8->Registers[Vx] & 0x80) >> 7;
+    Ch8->Registers[Vx] = Ch8->Registers[Vx] << 1;
+}
+
+void OP_9xy0(chip8* Ch8)
+{
+    uint8 Vx = (Ch8->Opcode & 0x0F00) >> 8;
+    uint8 Vy = (Ch8->Opcode & 0x00F0) >> 4;
+    if(Ch8->Registers[Vx] != Ch8->Registers[Vy])
+    {
+        Ch8->ProgramCounter += 2;
+    }
+}
+
+void OP_Annn(chip8* Ch8)
+{
+    Ch8->IndexRegister = Ch8->Opcode & 0x0FFF;
+}
+
+void OP_Bnnn(chip8* Ch8)
+{
+    Ch8->ProgramCounter = (Ch8->Opcode & 0x0FFF) + Ch8->Registers[0x0];
+}
+
+void OP_Cxkk(chip8* Ch8)
+{
+    uint8 Vx = (Ch8->Opcode & 0x0F00) >> 8;
+    Ch8->Registers[Vx] = RNG2() & (Ch8->Opcode & 0x00FF);
+}
+
+void OP_Dxyn(chip8* Ch8)
+{
+    
+}
+
+void OP_Ex9E(chip8* Ch8)
+{
+    uint8 Vx = (Ch8->Opcode & 0x0F00) >> 8;
+    uint8 Key = Ch8->Registers[Vx];
+    if(Ch8->KeyPad[Key])
+    {
+        Ch8->ProgramCounter += 2;
+    }
+}
+
+void OP_ExA1(chip8* Ch8)
+{
+    uint8 Vx = (Ch8->Opcode & 0x0F00) >> 8;
+    uint8 Key = Ch8->Registers[Vx];
+    if(!Ch8->KeyPad[Key])
+    {
+        Ch8->ProgramCounter += 2;
+    }
+}
+
+void OP_Fx07(chip8* Ch8)
+{
+    uint8 Vx = (Ch8->Opcode & 0x0F00) >> 8;
+    Ch8->Registers[Vx] = Ch8->DelayTimer;
+}
+
+
+void OP_Fx0A(chip8* Ch8)
+{
+	uint8_t Vx = (Ch8->Opcode & 0x0F00u) >> 8u;
+
+	if (Ch8->KeyPad[0])
+	{
+		Ch8->Registers[Vx] = 0;
+	}
+	else if (Ch8->KeyPad[1])
+	{
+		Ch8->Registers[Vx] = 1;
+	}
+	else if (Ch8->KeyPad[2])
+	{
+		Ch8->Registers[Vx] = 2;
+	}
+	else if (Ch8->KeyPad[3])
+	{
+		Ch8->Registers[Vx] = 3;
+	}
+	else if (Ch8->KeyPad[4])
+	{
+		Ch8->Registers[Vx] = 4;
+	}
+	else if (Ch8->KeyPad[5])
+	{
+		Ch8->Registers[Vx] = 5;
+	}
+	else if (Ch8->KeyPad[6])
+	{
+		Ch8->Registers[Vx] = 6;
+	}
+	else if (Ch8->KeyPad[7])
+	{
+		Ch8->Registers[Vx] = 7;
+	}
+	else if (Ch8->KeyPad[8])
+	{
+		Ch8->Registers[Vx] = 8;
+	}
+	else if (Ch8->KeyPad[9])
+	{
+		Ch8->Registers[Vx] = 9;
+	}
+	else if (Ch8->KeyPad[10])
+	{
+		Ch8->Registers[Vx] = 10;
+	}
+	else if (Ch8->KeyPad[11])
+	{
+		Ch8->Registers[Vx] = 11;
+	}
+	else if (Ch8->KeyPad[12])
+	{
+		Ch8->Registers[Vx] = 12;
+	}
+	else if (Ch8->KeyPad[13])
+	{
+		Ch8->Registers[Vx] = 13;
+	}
+	else if (Ch8->KeyPad[14])
+	{
+		Ch8->Registers[Vx] = 14;
+	}
+	else if (Ch8->KeyPad[15])
+	{
+		Ch8->Registers[Vx] = 15;
+	}
+	else
+	{
+		Ch8->ProgramCounter -= 2;
+	}
+}
+
+void OP_Fx15(chip8* Ch8)
+{
+    uint8 Vx = (Ch8->Opcode & 0x0F00) >> 8;
+    Ch8->DelayTimer = Ch8->Registers[Vx];
+}
+
+void OP_Fx18(chip8* Ch8)
+{
+    uint8 Vx = (Ch8->Opcode & 0x0F00) >> 8;
+    Ch8->SoundTimer = Ch8->Registers[Vx];
+}
+
+void OP_Fx1E(chip8* Ch8)
+{
+    uint8 Vx = (Ch8->Opcode & 0x0F00) >> 8;
+    Ch8->IndexRegister += Ch8->Registers[Vx];
+}
+
+void OP_Fx29(chip8* Ch8)
+{
+    uint8 Vx = (Ch8->Opcode & 0x0F00) >> 8;
+	uint8 Digit = Ch8->Registers[Vx];
+	Ch8->IndexRegister = FONTSET_START + (5 * Digit);
+}
+
+void OP_Fx33(chip8* Ch8)
+{
+    uint8_t Vx = (Ch8->Opcode & 0x0F00) >> 8;
+	uint8_t Value = Ch8->Registers[Vx];
+	Ch8->Memory[Ch8->IndexRegister + 2] = Value % 10;
+	Value /= 10;
+	Ch8->Memory[Ch8->IndexRegister + 1] = Value % 10;
+	Value /= 10;
+	Ch8->Memory[Ch8->IndexRegister] = Value % 10;
+}
+    
+void OP_Fx55(chip8* Ch8)
+{
+    uint8 Vx = (Ch8->Opcode & 0x0F00) >> 8;
+    for(int i = 0; i <= Vx; i++ )
+    {
+        Ch8->Memory[Ch8->IndexRegister + i] = Ch8->Registers[i];
+    }
+}
+
+void OP_Fx65(chip8* Ch8)
+{
+    uint8 Vx = (Ch8->Opcode & 0x0F00) >> 8;
+    for(int i = 0; i <= Vx; i++ )
+    {
+        Ch8->Registers[i] = Ch8->Memory[Ch8->IndexRegister + i]; 
+    }
+}

@@ -50,6 +50,12 @@ int main(int argc, char** argv)
         DrawPixelData(Ch8.VideoMemory);
         EndDrawing();
     }
+    PrintRom(&Ch8);
+    for(uint16 i = 0; i < 50; i+=2)
+    {
+        Ch8.Opcode = (Ch8.Memory[ROMSTART_ADDRESS + i] << 8) | Ch8.Memory[ROMSTART_ADDRESS + i + 1];
+        printf("Opcode:: %02X\n", Ch8.Opcode);
+    }
     CloseWindow();
     return 0;
 }
