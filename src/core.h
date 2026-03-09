@@ -49,25 +49,26 @@ extern "C"
     #define ROMSTART_ADDRESS 0x200
 
     typedef struct {
-        uint8 Registers[16]; // Registers
-        uint8 Memory[4096]; // (RAM)
+        uint8  Registers[16]; // Registers
+        uint8  Memory[4096]; // (RAM)
         uint16 IndexRegister; 
         uint16 ProgramCounter; 
         uint16 Stack[16]; 
-        uint8 StackPointer; 
-        uint8 DelayTimer; 
-        uint8 SoundTimer; 
-        uint8 KeyPad[16]; // Input Keys
-        uint8 VideoMemory[VWIDTH * VHEIGHT]; // Video Memory
+        uint8  StackPointer; 
+        uint8  DelayTimer; 
+        uint8  SoundTimer; 
+        uint8  KeyPad[16]; // Input Keys
+        uint32 VideoMemory[VWIDTH * VHEIGHT];
         uint16 Opcode; // Opcode
         uint16 RomSize; // RomSize(In Bytes)
     }chip8;
 
     void PrintFonts(uint8* Memory, uint8 FontSetSize);
     void PrintRom(chip8* Ch8);
-    void DrawPixelData(uint8* VideoMemory);
+    void DrawPixelData(uint32* VideoMemory);
     long GetFileSize(const char *FileName);
     void LoadRom(const char* FilePath, chip8* Ch8);
+    void Cycle(chip8* Ch8);
     void DrawFont(uint16 PosX, uint16 PosY, uint8* FontSet, uint16 FontOffSet);
     void RNG(chip8* Ch8, uint8 RegisterIndex); // Random number generator, to set register with some random value.
     

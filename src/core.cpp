@@ -1,7 +1,27 @@
 #include "core.h"
-
 #define SCALE 2
-#define FONTCANVASWIDTH 10
+
+void Cycle(chip8* Ch8)
+{
+    // Fetch
+	Ch8->Opcode = (Ch8->Memory[Ch8->ProgramCounter] << 8u) | Ch8->Memory[Ch8->ProgramCounter + 1];
+
+	// Increment the PC before we execute anything
+	Ch8->ProgramCounter += 2;
+
+	// Decode and Execute
+    // Decode and Execute in not yet implemented
+	if (Ch8->DelayTimer > 0)
+	{
+		--Ch8->DelayTimer;
+	}
+	if (Ch8->SoundTimer > 0)
+	{
+		--Ch8->SoundTimer;
+	}
+
+}
+
 void DrawFont(uint16 PosX, uint16 PosY, uint8* FontSet, uint16 FontOffSet)
 {
     uint16 Pitch = 0;
@@ -52,7 +72,7 @@ long GetFileSize(const char *FileName)
 
 
 
-void DrawPixelData(uint8* VideoMemory)
+void DrawPixelData(uint32* VideoMemory)
 {
     for(int Row = 0; Row < VHEIGHT; ++Row)
     {
@@ -316,7 +336,39 @@ void OP_Cxkk(chip8* Ch8)
 
 void OP_Dxyn(chip8* Ch8)
 {
-    
+    uint8_t Vx = (Ch8->Opcode & 0x0F00) >> 8;
+	uint8_t Vy = (Ch8->Opcode & 0x00F0) >> 4;
+	uint8_t Height = Ch8->Opcode & 0x000Fu;
+
+	// Wrap if going beyond screen boundaries
+	uint8_t xPos = Ch8->Registers[Vx] % VWIDTH;
+	uint8_t yPos = Ch8->Registers[Vy] % VHEIGHT;
+
+	Ch8->Registers[0xF] = 0;
+
+	for (unsigned int Row = 0; Row < Height; ++Row)
+	{
+		uint8_t SpriteByte = Ch8->Memory[Ch8->IndexRegister + Row];
+
+		for (uint32 Col = 0; Col < 8; ++Col)
+		{
+			uint8_t SpritePixel = SpriteByte & (0x80u >> Col);
+			uint32* ScreenPixel = &Ch8->VideoMemory[(yPos + Row) * VWIDTH + (xPos + Col)];
+
+			// Sprite pixel is on
+			if (SpritePixel)
+			{
+				// Screen pixel also on - collision
+				if (*ScreenPixel == 0xFFFFFFFF)
+				{
+					Ch8->Registers[0xF] = 1;
+				}
+
+				// Effectively XOR with the sprite pixel
+				*ScreenPixel ^= 0xFFFFFFFF;
+			}
+		}
+	}
 }
 
 void OP_Ex9E(chip8* Ch8)
