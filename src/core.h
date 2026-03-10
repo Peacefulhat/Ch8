@@ -26,6 +26,7 @@ extern "C"
     typedef float    real32;
     typedef double   real64;
 
+
     #define SCREEN_WIDTH  1280
     #define SCREEN_HEIGHT 640
 
@@ -62,7 +63,8 @@ extern "C"
         uint16 Opcode; // Opcode
         uint16 RomSize; // RomSize(In Bytes)
     }chip8;
-
+    
+    typedef void (*OpcodeFunc)(chip8*);
     void PrintFonts(uint8* Memory, uint8 FontSetSize);
     void PrintRom(chip8* Ch8);
     void DrawPixelData(uint32* VideoMemory);
@@ -73,13 +75,14 @@ extern "C"
     void RNG(chip8* Ch8, uint8 RegisterIndex); // Random number generator, to set register with some random value.
     
     //Instructions             Assembly       Description
-    
+    void OP_0nnn(chip8* Ch8);// SYS addr      Jump to a machine code routine at nnn.
+
     void OP_00E0(chip8* Ch8);// CLS           clear screen.
     void OP_00EE(chip8* Ch8);// RET           return top of the stack and assign it to Program Counter. Returns from subroutine.
     void OP_1nnn(chip8* Ch8);// JP addr,      Jump to nnn location. A jump doesn’t remember its origin, so no stack interaction required.
     void OP_2nnn(chip8* Ch8);// CALL addr,    Call subroutine at nnn location.
     void OP_3xkk(chip8* Ch8);// SE Vx, byte   Skip next instruction if Vx = kk. Vx just means the register indexed by x in the array V[16].
-    void OP_3xkk(chip8* Ch8);// SNE Vx, byte  Skip next instruction if Vx != kk.
+    void OP_4xkk(chip8* Ch8);// SNE Vx, byte  Skip next instruction if Vx != kk.
     void OP_5xy0(chip8* Ch8);// SE Vx, Vy     Skip next instruction if Vx = Vy.
     void OP_6xkk(chip8* Ch8);// LD Vx, byte   Set Vx = kk.
     void OP_7xkk(chip8* Ch8);// ADD Vx, byte  Set Vx = Vx + kk.
