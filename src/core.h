@@ -26,12 +26,13 @@ extern "C"
     typedef float    real32;
     typedef double   real64;
 
-
-    #define SCREEN_WIDTH  1280
-    #define SCREEN_HEIGHT 640
-
-    // scale factor for video memory layout to map to window width and height.
     #define PIXELSCALE 20
+    #define PIXELWIDTH 20
+    #define PIXELHEIGHT 20
+    
+    #define SCREEN_WIDTH  (64 * PIXELSCALE)
+    #define SCREEN_HEIGHT (32 * PIXELSCALE)
+    // scale factor for video memory layout to map to window width and height.
     #define SCALE 1
     // vidoe memory pixel layout.
     #define VWIDTH  64 
@@ -69,6 +70,7 @@ extern "C"
     void PrintFonts(uint8* Memory, uint8 FontSetSize);
     void PrintRom(chip8* Ch8);
     void DrawPixelData(uint32* VideoMemory);
+    void KeyPadInput(uint8* KeyPad);
     long GetFileSize(const char *FileName);
     void LoadRom(const char* FilePath, chip8* Ch8);
     void Cycle(chip8* Ch8);

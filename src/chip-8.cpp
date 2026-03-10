@@ -44,11 +44,12 @@ void Chip8Init(chip8 *Ch8)
     {
         Ch8->Memory[FONTSET_START + FontIndex] = Chip8FontSet[FontIndex];
     }
-    LoadRom("D:/ch8/src/roms/programs/Fishie [Hap, 2005].ch8", Ch8);
+    LoadRom("/home/peacefulhat/ch8/roms/games/Pong (1 player).ch8", Ch8);
 }
 
 int main(int argc, char** argv)
 {
+    SetTargetFPS(60);
     srand(time(NULL));
     chip8 Ch8 = {};
     Chip8Init(&Ch8);
@@ -56,13 +57,17 @@ int main(int argc, char** argv)
     DEBUGPrintOpcode(&Ch8);
     while (!WindowShouldClose())
     {
-        BeginDrawing();
-        ClearBackground(RED);
-        DrawPixelData(Ch8.VideoMemory);
+        // number of instructions per-frame
+    for(int i = 0; i < 7; i++)
+    {
         Cycle(&Ch8);
-        DEBUGChip8(&Ch8);
-        EndDrawing();
     }
-    CloseWindow();
+    KeyPadInput(Ch8.KeyPad);
+    BeginDrawing();
+    ClearBackground(BLACK);
+    DrawPixelData(Ch8.VideoMemory);
+    EndDrawing();
+}
+CloseWindow();
     return 0;
 }

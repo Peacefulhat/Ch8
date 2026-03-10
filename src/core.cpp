@@ -1,17 +1,18 @@
 #include "core.h"
 
-void Fetch(chip8* Ch8)
+void RNG(chip8* Ch8, uint8 RegisterIndex)
 {
-    Ch8->Opcode = (Ch8->Memory[Ch8->ProgramCounter] << 8u) | Ch8->Memory[Ch8->ProgramCounter + 1];
-    // Increment the PC before we execute anything
-    Ch8->ProgramCounter += 2;
+    Ch8->Registers[RegisterIndex] = rand() % 256;
+}
+
+static uint8 RNG2(){
+    return rand() % 256;
 }
 
 long GetFileSize(const char *FileName)
 {
     FILE *Fp = {};
     Fp = fopen(FileName, "rb");
-
     if (Fp == NULL) return -1;
 
     if (fseek(Fp, 0, SEEK_END) < 0)
@@ -19,7 +20,6 @@ long GetFileSize(const char *FileName)
         fclose(Fp);
         return -1;
     }
-
     long FileSize = ftell(Fp);
     fclose(Fp);
     return FileSize;
@@ -29,32 +29,56 @@ long GetFileSize(const char *FileName)
 // some padding issues it look like its stuck to the top of the window.
 void DrawPixelData(uint32* VideoMemory)
 {
-    bool32 Padding = 1;
-     
     for(int Row = 0; Row < VHEIGHT; ++Row)
     {
         for(int Cols = 0; Cols < VWIDTH; ++Cols)
         {
             if(VideoMemory[Row * VWIDTH + Cols] == 0){
-                DrawRectangle(Cols * PIXELSCALE, (Row * PIXELSCALE), 20, 20, BLACK);
+                DrawRectangle(Cols * PIXELSCALE, (Row * PIXELSCALE), PIXELWIDTH, PIXELWIDTH, BLACK);
             }
             else
             {
-                DrawRectangle(Cols * PIXELSCALE, (Row * PIXELSCALE), 20, 20, RAYWHITE);
+                DrawRectangle(Cols * PIXELSCALE, (Row * PIXELSCALE), PIXELWIDTH, PIXELHEIGHT, RAYWHITE);
             }
         }
-        
     }
 }
 
-
-void RNG(chip8* Ch8, uint8 RegisterIndex)
+void KeyPadInput(uint8* KeyPad)
 {
-    Ch8->Registers[RegisterIndex] = rand() % 255;
-}
-
-static uint8 RNG2(){
-    return rand() % 256;
+    if(IsKeyDown(KEY_ZERO))  {KeyPad[0x0] = 1;}
+    if(IsKeyDown(KEY_ONE))   {KeyPad[0x1] = 1;}
+    if(IsKeyDown(KEY_TWO))   {KeyPad[0x2] = 1;}
+    if(IsKeyDown(KEY_THREE)) {KeyPad[0x3] = 1;}
+    if(IsKeyDown(KEY_FOUR))  {KeyPad[0x4] = 1;}
+    if(IsKeyDown(KEY_FIVE))  {KeyPad[0x5] = 1;}
+    if(IsKeyDown(KEY_SIX))   {KeyPad[0x6] = 1;}
+    if(IsKeyDown(KEY_SEVEN)) {KeyPad[0x7] = 1;}
+    if(IsKeyDown(KEY_EIGHT)) {KeyPad[0x8] = 1;}
+    if(IsKeyDown(KEY_NINE))  {KeyPad[0x9] = 1;}
+    if(IsKeyDown(KEY_A))     {KeyPad[0xA] = 1;}
+    if(IsKeyDown(KEY_B))     {KeyPad[0xB] = 1;}
+    if(IsKeyDown(KEY_C))     {KeyPad[0xC] = 1;}
+    if(IsKeyDown(KEY_D))     {KeyPad[0xD] = 1;}
+    if(IsKeyDown(KEY_E))     {KeyPad[0xE] = 1;}
+    if(IsKeyDown(KEY_F))     {KeyPad[0xF] = 1;}
+    
+    if(IsKeyUp(KEY_ZERO)) {KeyPad[0x0] = 0;}
+    if(IsKeyUp(KEY_ONE)) {KeyPad[0x1] = 0;}
+    if(IsKeyUp(KEY_TWO)) {KeyPad[0x2] = 0;}
+    if(IsKeyUp(KEY_THREE)) {KeyPad[0x3] = 0;}
+    if(IsKeyUp(KEY_FOUR)) {KeyPad[0x4] = 0;}
+    if(IsKeyUp(KEY_FIVE)) {KeyPad[0x5] = 0;}
+    if(IsKeyUp(KEY_SIX)) {KeyPad[0x6] = 0;}
+    if(IsKeyUp(KEY_SEVEN)) {KeyPad[0x7] = 0;}
+    if(IsKeyUp(KEY_EIGHT)) {KeyPad[0x8] = 0;}
+    if(IsKeyUp(KEY_NINE)) {KeyPad[0x9] = 0;}
+    if(IsKeyUp(KEY_A)) {KeyPad[0xA] = 0;}
+    if(IsKeyUp(KEY_B)) {KeyPad[0xB] = 0;}
+    if(IsKeyUp(KEY_C)) {KeyPad[0xC] = 0;}
+    if(IsKeyUp(KEY_D)) {KeyPad[0xD] = 0;}
+    if(IsKeyUp(KEY_E)) {KeyPad[0xE] = 0;}
+    if(IsKeyUp(KEY_F)) {KeyPad[0xF] = 0;}
 }
 
 
@@ -72,6 +96,16 @@ void LoadRom(const char* FileName, chip8* Ch8)
     fread(Ch8->Memory + ROMSTART_ADDRESS, 1, FileSize, File);
     Ch8->RomSize = (uint16)(FileSize);
     fclose(File);
+}
+
+
+
+
+void Fetch(chip8* Ch8)
+{
+    Ch8->Opcode = (Ch8->Memory[Ch8->ProgramCounter] << 8u) | Ch8->Memory[Ch8->ProgramCounter + 1];
+    // Increment the PC before we execute anything
+    Ch8->ProgramCounter += 2;
 }
 
 OpcodeFunc Decode(chip8* Ch8)
