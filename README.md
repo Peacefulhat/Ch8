@@ -11,4 +11,4 @@ All the Resources are described in chip-8.txt file.
 ### Sierpinski
 ![](assets/Sierpinski.png)
 ### Single Player Pong
-![](assets/Single_PlayerPong.png)
+![](assets/Single_Player_Pong.png)
