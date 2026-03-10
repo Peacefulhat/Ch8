@@ -1,7 +1,12 @@
 These are the resource that i found online, that help me make my chip8 emulator
 
-Resource: A Blog on chip-8 by AustinMorlan.
+Resource:
+A Blog on chip-8 by AustinMorlan.
 https://austinmorlan.com/posts/chip8_emulator/
 
-Resource:
 https://multigesture.net/articles/how-to-write-an-emulator-chip-8-interpreter/
+
+http://devernay.free.fr/hacks/chip8/C8TECH10.HTM
+
+Roms:
+https://github.com/dmatlack/chip8/tree/master/roms/

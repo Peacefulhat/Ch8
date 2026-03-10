@@ -12,3 +12,12 @@ All the Resources are described in chip-8.txt file.
 ![](assets/Sierpinski.png)
 ### Single Player Pong
 ![](assets/Single_Player_Pong.png)
+
+## Dependencies
+- Need Raylib, make on linux.
+- on Windows Raylib + MSVC.
+- Then just move in to the src directory.
+and customize build.bat  and Then run build.bat to generate exe
+- On linux just move in to the src directory and run make command
+
+
