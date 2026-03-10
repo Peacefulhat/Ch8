@@ -15,9 +15,8 @@ All the Resources are described in chip-8.txt file.
 
 ## Dependencies
 - Need Raylib, make on linux.
-- on Windows Raylib + MSVC.
-- Then just move in to the src directory.
-and customize build.bat  and Then run build.bat to generate exe
+- Need Raylib + MSVC. on windows.
+- On Windows ,move in to the src directory and customize build.bat  and Then run build.bat to generate exe
 - On linux just move in to the src directory and run make command
 
 
