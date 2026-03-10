@@ -4,8 +4,8 @@ The goal of this project is to document and share what i have learn't while buil
 All the Resources are described in chip-8.txt file.
 
 # Test Examples.
-###Chip8 Logo
-![](assets/Chip8Logo.png)
+### Chip8 Logo
+![](assets/Chip8Logopng.png)
 ### Keypad Test
 ![](assets/KeyPad_test.png)
 ### Sierpinski
