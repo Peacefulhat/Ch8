@@ -32,15 +32,16 @@ extern "C"
 
     // scale factor for video memory layout to map to window width and height.
     #define PIXELSCALE 20
-
+    #define SCALE 1
     // vidoe memory pixel layout.
     #define VWIDTH  64 
     #define VHEIGHT 32 
 
+    #define MEM_SIZE 4096
     // Originally reserved for chip8 interpreter.
     #define MemoryStartChip8 0x000
     #define MemoryEndChip8   0x1FF 
-
+    
     // Memory address Space for 16 built-in characters.
     #define FONTSET_START 0x050
     #define FONTSET_END   0x0A0
@@ -51,7 +52,7 @@ extern "C"
 
     typedef struct {
         uint8  Registers[16]; // Registers
-        uint8  Memory[4096]; // (RAM)
+        uint8  Memory[MEM_SIZE]; // (RAM)
         uint16 IndexRegister; 
         uint16 ProgramCounter; 
         uint16 Stack[16]; 
@@ -129,6 +130,95 @@ extern "C"
     //The interpreter takes the decimal value of Vx, and places the hundreds digit in memory at location in I, the tens digit at location I+1, and the ones digit at location I+2.
     void OP_Fx55(chip8* Ch8);// LD [I], Vx             Store registers V0 through Vx in memory starting at location I.The interpreter copies the values of registers V0 through Vx into memory, starting at the address in I.
     void OP_Fx65(chip8* Ch8);// LD Vx, [I]                 Read registers V0 through Vx from memory starting at location I.
+    
+    #ifdef DEBUGCHIP8
+    
+    void DEBUGPrintOpcode(chip8* Ch8)
+    {
+        printf("\nOpcode:: \n");
+        for(int i = 0; i<Ch8->RomSize; i++){
+            printf("%02X\n", (Ch8->Memory[ROMSTART_ADDRESS + i] << 8) | (Ch8->Memory[ROMSTART_ADDRESS + i + 1]));
+        }
+    }
+
+    void DEBUGChip8(chip8* Ch8)
+    {
+        printf("Registers::\n");
+        for(int i=0; i<16; i++){
+            
+            printf("Register[%d]:: %02X\n",i, Ch8->Registers[i]);
+        }
+        printf("Stack::\n");
+        for(int i=0; i<16; i++){
+            
+            printf("Stack[%d]:: %02X\n",i, Ch8->Stack[i]);
+        } 
+        printf("\nIndexRegister:: %d\n", Ch8->IndexRegister);
+        printf("ProgramCounter:: %d\n", Ch8->ProgramCounter); 
+        
+        printf("DelayTimer:: %02X\n", Ch8->DelayTimer);
+        printf("SoundTimer:: %02X\n", Ch8->SoundTimer);
+        printf("Opcode:: %02X\n", Ch8->Opcode);
+    }
+    
+    void DEBUGDrawFont(uint16 PosX, uint16 PosY, uint8* FontSet, uint16 FontOffSet)
+    {
+        uint16 Pitch = 0;
+        uint16 TempX = PosX;
+        for(uint16 Offset = 0; Offset < 16; Offset++){
+
+            for(uint16 FontIndex = 0; FontIndex < 5; ++FontIndex)
+            {
+                uint8 Font = FontSet[FontIndex + FontOffSet * Offset] >> 4;
+                uint16 Mask = 0x8; 
+                while(Mask)
+                {
+                    if(Font & Mask)
+                    {
+                        DrawRectangle((PosX)*SCALE , (PosY + Pitch)*SCALE, 2*SCALE, 2*SCALE, RAYWHITE);
+                    }else
+                    {
+                        DrawRectangle((PosX)*SCALE , (PosY + Pitch)*SCALE, 2*SCALE, 2*SCALE, BLACK);
+                    }
+                    PosX += 2;
+                    Mask >>= 1;
+                    
+                }
+                PosX = TempX;
+                Pitch +=2;
+            }
+            Pitch +=5;
+        }
+    }
+
+    void DEBUGPrintFonts(uint8* Memory, uint8 FontSetSize)
+    {
+        printf("\nFont::\n");
+        for(int FontIndex = 0; FontIndex < FontSetSize; FontIndex++)
+        {
+            if((FontIndex + 1) % 5 == 0)
+            {
+                printf("%02X\n", Memory[FONTSET_START + FontIndex]);
+                continue;
+            }
+            printf("%02X ", Memory[FONTSET_START + FontIndex]);
+
+        }   
+    }
+
+    void DEBUGPrintRom(chip8* Ch8)
+    {
+        printf("Rom::\n");
+        for(uint32 i = 0; i < Ch8->RomSize; ++i)
+        {
+            printf("%02X ", Ch8->Memory[ROMSTART_ADDRESS + i]);
+
+            if((i + 1)  % 16  == 0)
+            printf("\n");
+        }
+        
+    }
+    #endif
 
     #ifdef __cplusplus    
 }

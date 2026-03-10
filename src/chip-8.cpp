@@ -1,6 +1,7 @@
+#define DEBUGCHIP8
 #include "core.h"
 #define FONTSET_SIZE 80
-
+// Not finished yet may contain some bugs.
 uint8 Chip8FontSet[FONTSET_SIZE] =
 { 
     0xF0, 0x90, 0x90, 0x90, 0xF0, // 0
@@ -24,14 +25,14 @@ uint8 Chip8FontSet[FONTSET_SIZE] =
 void Chip8Init(chip8 *Ch8)
 {
     Ch8->ProgramCounter = ROMSTART_ADDRESS;
-    for(uint32 i = 0; i < Ch8->Memory; i++)
+    for(uint32 i = 0; i < MEM_SIZE ; i++)
     {
         Ch8->Memory[i] = 0;
     }
     
     for(uint32 i = 0; i < VWIDTH * VHEIGHT; i++)
     {
-        Ch8->VideoMemory[i] = 1;
+        Ch8->VideoMemory[i] = 0;
     }
     
     for(uint8 i = 0; i < 16; i++)
@@ -43,53 +44,25 @@ void Chip8Init(chip8 *Ch8)
     {
         Ch8->Memory[FONTSET_START + FontIndex] = Chip8FontSet[FontIndex];
     }
-    LoadRom("D:/ch8/src/roms/AstroDodge.ch8", Ch8);
+    LoadRom("D:/ch8/src/roms/programs/Fishie [Hap, 2005].ch8", Ch8);
 }
 
-void PrintOpcode(chip8* Ch8)
-{
-    printf("\nOpcode:: \n");
-    for(int i = 0; i<Ch8->RomSize; i++){
-        printf("%02X\n", (Ch8->Memory[ROMSTART_ADDRESS + i] << 8) | (Ch8->Memory[ROMSTART_ADDRESS + i + 1]));
-    }
-}
-
-void DebugOut(chip8* Ch8)
-{
-    printf("Registers::\n");
-    for(int i=0; i<16; i++){
-        
-        printf("Register[%d]:: %02X\n",i, Ch8->Registers[i]);
-    }
-    printf("Stack::\n");
-    for(int i=0; i<16; i++){
-        
-        printf("Stack[%d]:: %02X\n",i, Ch8->Stack[i]);
-    } 
-    printf("\nIndexRegister:: %d\n", Ch8->IndexRegister);
-    printf("ProgramCounter:: %d\n", Ch8->ProgramCounter); 
-   
-    printf("DelayTimer:: %02X\n", Ch8->DelayTimer);
-    printf("SoundTimer:: %02X\n", Ch8->SoundTimer);
-    printf("Opcode:: %02X\n", Ch8->Opcode);
-}
 int main(int argc, char** argv)
 {
     srand(time(NULL));
     chip8 Ch8 = {};
     Chip8Init(&Ch8);
-    //    InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Chip8");
-    PrintOpcode(&Ch8);
-    while (true)
+    InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Chip8");
+    DEBUGPrintOpcode(&Ch8);
+    while (!WindowShouldClose())
     {
-//        BeginDrawing();
-  //      ClearBackground(RED);
-    //    DrawPixelData(Ch8.VideoMemory);
-    Cycle(&Ch8);
-    DebugOut(&Ch8);
-      //  EndDrawing();
+        BeginDrawing();
+        ClearBackground(RED);
+        DrawPixelData(Ch8.VideoMemory);
+        Cycle(&Ch8);
+        DEBUGChip8(&Ch8);
+        EndDrawing();
     }
-
-//    CloseWindow();
+    CloseWindow();
     return 0;
 }
